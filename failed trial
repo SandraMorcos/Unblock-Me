@@ -1,0 +1,359 @@
+#include <GL\glut.h>
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
+GLfloat rot = 0;
+GLint index;
+GLint X[9], Y[9], Ox[9] = { 0, -9, 15, -3, 12, -15, -9, 9, -12 }, Oy[9] = { 0, 15, 9, 3, -3, -6, -15, -12, 3 }; // Cx[9], Cy[9];
+//GLuint texture;
+
+/*GLuint LoadTextureRAW(const char * filename, int wrap)
+{
+	GLuint texture;
+	int width, height;
+	unsigned char* data;
+	FILE * file;
+
+	// open texture data
+	file = fopen(filename, "rb");
+	if (file == NULL) return 0;
+
+	// allocate buffer
+	width = 256;
+	height = 256;
+	data = new unsigned char[width * height * 3];
+
+	// read texture data
+	fread(data, width * height * 3, 1, file);
+	fclose(file);
+
+	// allocate a texture name
+	glGenTextures(1, &texture);
+
+	// select our current texture
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	// select modulate to mix texture with color for shading
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// free buffer
+	delete[] data;
+
+	return texture;
+
+}*/
+
+
+void init(void)
+{
+	/*  Set color of display window to white.  */
+	glClearColor(1.0, 1.0, 1.0, 0.0);
+
+	/*  Set parameters for world-coordinate clipping window.  */
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluOrtho2D(-22, 22, -22, 22);
+	//gluPerspective(100, 1, 1, 40);
+	//gluLookAt(0, 30, 0, 0, 0, 0, 1, 0, 0);
+	//gluLookAt(0, 0, 30, 0, 0, 0, 0, 1, 0);
+}
+
+
+void limit()
+{
+	glPushMatrix();
+	glColor3f(.3, .3, .3);
+	glBegin(GL_LINE_STRIP);
+	glVertex2d(18.5, 0);
+	glVertex2d(18.5, -18.5);
+	glVertex2d(-18.5, -18.5);
+	glVertex2d(-18.5, 18.5);
+	glVertex2d(18.5, 18.5);
+	glVertex2d(18.5, 6);
+	glEnd();
+	glBegin(GL_LINES);
+	glVertex2d(18.5, 6);
+	glVertex2d(19.5, 6);
+	glVertex2d(18.5, 0);
+	glVertex2d(19.5, 0);
+	glEnd();
+	glPopMatrix();
+}
+
+void rect2()
+{
+	glColor3f(0.5, 0, .5);
+	glBegin(GL_POLYGON);
+	glVertex2f(6, 3);
+	glVertex2f(6, -3);
+	glVertex2f(-6, -3);
+	glVertex2f(-6, 3);
+	glEnd();
+	glColor3f(0.3, 0.3, 0.3);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(6, 3);
+	glVertex2f(6, -3);
+	glVertex2f(-6, -3);
+	glVertex2f(-6, 3);
+	glEnd();
+}
+
+void winner()
+{
+	glColor3f(1, 0, 0);
+	glBegin(GL_POLYGON);
+	glVertex2f(6, 3);
+	glVertex2f(6, -3);
+	glVertex2f(-6, -3);
+	glVertex2f(-6, 3);
+	glEnd();
+}
+
+void rect3()
+{
+	
+	
+	glColor3f(0.5, 0, .5);
+	glBegin(GL_POLYGON);
+	glVertex2f(-3, -9);
+	glVertex2f(-3, 9);
+	glVertex2f(3, 9);
+	glVertex2f(3, -9);
+	glEnd();
+	//glClearColor(1.0, 1.0, 1.0, 0.0);
+	glColor3f(0.3, 0.3, .3);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(-3, -9);
+	glVertex2f(-3, 9);
+	glVertex2f(3, 9);
+	glVertex2f(3, -9);
+	glEnd();
+
+}
+
+void circle()
+{
+	GLdouble k;
+	glBegin(GL_POLYGON);
+	for (k = 0; k < 360; k++)
+		glVertex2d(1.5*cos(k), 1.5*sin(k));
+	glEnd();
+}
+
+void displayFcn(void)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);   //  Clear display window.
+
+
+	glMatrixMode(GL_MODELVIEW);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_POLYGON);
+
+	/*glPushMatrix();
+	//glTranslatef(rot, 0, 0);
+	//glRotatef(rot, 1, 0, 0);
+	glColor3f(0, 1, 0);
+	glutSolidSphere(5, 20, 20);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(-10, 0, 0);
+	glTranslatef(rot, 0, 0);
+	if (rot == 5)
+	{
+		glPushMatrix();
+		glColor3f(1, 0, 0);
+		glutWireCube(2);
+		glPopMatrix();
+	}
+	//glRotatef(rot, 1, 0, 0);
+	glColor3f(0, 1, 0);
+	glutSolidSphere(5, 20, 20);
+	glPopMatrix();*/
+
+
+	// outer body
+	limit();
+
+	glPushMatrix();
+	glTranslatef(12, -3, 0);
+	glTranslatef(X[4], 0, 0);
+	rect2();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(9, -12, 0);
+	glTranslatef(0, Y[7], 0);
+	glRotatef(90, 0, 0, 1);
+	rect2();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-15, -6, 0);
+	glTranslatef(0, Y[5], 0);
+	glRotatef(90, 0, 0, 1);
+	rect2();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(15, 9, 0);
+	glTranslatef(0, Y[2], 0);
+	rect3();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-9, 15, 0);
+	glTranslatef(X[1], 0, 0);
+	glRotatef(90, 0, 0, 1);
+	rect3();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-3, 3, 0);
+	glTranslatef(0, Y[3], 0);
+	rect3();
+	glPopMatrix();
+	
+	glPushMatrix();
+	glTranslatef(-9, -15, 0);
+	glTranslatef(X[6], 0, 0);
+	glRotatef(90, 0, 0, 1);
+	rect3();
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(-12, 3, 0);
+	glTranslatef(X[8], 0, 0);
+	winner();
+	glPopMatrix();
+
+	glutSwapBuffers();
+}
+
+void myReshape(int w, int h) {
+	glViewport(0, 0, w, h);
+	glutPostRedisplay();
+}
+
+void Key(unsigned char c, int x, int y)
+{
+	switch (c) {
+	case 27:
+		exit(0);
+		break;
+	case 'r': // reset vehicle to origianl position
+		for (int i = 0; i < 9; i++)
+			X[i] = Y[i] = 0;
+		glutPostRedisplay();
+		break;
+	case '1': 
+		index = 1;
+		glutPostRedisplay();
+		break;
+	case '2': 
+		index = 2;
+		glutPostRedisplay();
+		break;
+	case '3': 
+		index = 3;
+		glutPostRedisplay();
+		break;
+	case '4': 
+		index = 4;
+		glutPostRedisplay();
+		break;
+	case '5': 
+		index = 5;
+		glutPostRedisplay();
+		break;
+	case '6':
+		index = 6;
+		glutPostRedisplay();
+		break;
+	case '7': 
+		index = 7;
+		glutPostRedisplay();
+		break;
+	case 'w': 
+		index = 8;
+		glutPostRedisplay();
+		break;
+
+	}
+}
+
+void myKeyboard(int c, int x, int y) {
+	switch (c) {
+	case GLUT_KEY_LEFT:
+		if (Ox[index] + X[index] - 6 > -15)
+		{
+			X[index] -= 6;
+			Ox[index] += X[index];
+		}
+		for (int i = 0; i < 9; i++)
+			cout << index << "start: " << i << ' ' << Ox[i] << ' ' << Oy[i] << endl;
+		cout << endl;
+		glutPostRedisplay();
+		break;
+	case GLUT_KEY_RIGHT:
+		if ((Ox[index] + X[index] + 6 < 15) || (index == 8))
+		{
+			X[index] += 6;
+			Ox[index] += X[index];
+			//cout << index << ' ' << X[index] << ' ' << Y[index] << endl;
+		}
+		for (int i = 0; i < 9; i++)
+			cout << index << " start: " << i << ' ' << Ox[i] << ' ' << Oy[i] << endl;
+		cout << endl;
+		glutPostRedisplay();
+		break;
+	case GLUT_KEY_UP:
+		if (Oy[index] + Y[index] + 6 < 15)
+		{
+			Y[index] += 6;
+			Oy[index] += Y[index];
+			//cout << index << ' ' << X[index] << ' ' << Y[index] << endl;
+		} 
+		for (int i = 0; i < 9; i++)
+			cout << index << " start: " << i <<' ' << Ox[i] << ' ' << Oy[i] << endl;
+		cout << endl;
+		glutPostRedisplay();
+		break;
+	case GLUT_KEY_DOWN:
+		if (Oy[index] + Y[index] - 6 > -15)
+		{
+			Y[index] -= 6;
+			Oy[index] += Y[index];
+			//cout << index << ' ' << X[index] << ' ' << Y[index] << endl;
+		}
+		for (int i = 0; i < 9; i++)
+			cout << index << " start: " << i << ' '  << Ox[i] << ' ' << Oy[i] << endl;
+		cout << endl;
+		glutPostRedisplay();
+		break;
+	default:
+		break;
+	}
+}
+
+int main(int argc, char ** argv)
+{
+
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowPosition(20, 20);
+	glutInitWindowSize(500, 500);
+	glutCreateWindow("Block Puzzle");
+
+	init();	
+	glutDisplayFunc(displayFcn);
+	glutReshapeFunc(myReshape);
+	glutSpecialFunc(myKeyboard);
+	glutKeyboardFunc(Key);
+	glutMainLoop();
+
+	return 0;
+}
